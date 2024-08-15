@@ -1,0 +1,165 @@
+bodies:
+- name: base
+  type: dynamic
+  color: [1, 1, 1, 0.75]
+  footprints:
+    - type: polygon
+      density: 100
+      points: 
+        [ [-0.5, 0.25],
+          [ 0.5, 0.25],
+          [ 0.5, -0.25],
+          [-0.5, -0.25] ]
+      layers: ["robot","3d"]  # 车体所在层
+
+- name: laser_mount
+  pose: [0, 0, 0] 
+  type: dynamic  
+  color: [1, 0, 0, 0.75] 
+  footprints:
+    - type: polygon  # 激光模型
+      sensor: true
+      points: 
+        [ [-0.1, 0.1],
+          [ 0.1, 0.1],
+          [ 0.1, -0.1],
+          [-0.1, -0.1] ]
+      layers: ["laser_layer"]  # 激光所在层
+      density: 1
+
+- name: front_left_wheel
+  color: [1, 1, 1, 0.75]
+  footprints:
+    - type: polygon
+      density: 1.0
+      points: 
+        [ [ 0.0875, -0.0250],
+          [ 0.0875,  0.0250],
+          [-0.0875, 0.0250],
+          [-0.0875, -0.0250] ]
+      layers: ["robot","3d"]  # 车轮所在层
+
+- name: front_right_wheel
+  color: [1, 1, 1, 0.75]
+  footprints:
+    - type: polygon
+      density: 1.0
+      points: 
+        [ [ 0.0875, -0.0250],
+          [ 0.0875,  0.0250],
+          [-0.0875, 0.0250],
+          [-0.0875, -0.0250] ]
+      layers: ["robot","3d"]  # 车轮所在层
+
+- name: rear_left_wheel
+  color: [1, 1, 1, 0.75]
+  footprints:
+    - type: polygon
+      density: 1.0
+      points: 
+        [ [ 0.0875, -0.0255],
+          [ 0.0875,  0.0255],
+          [-0.0875, 0.0255],
+          [-0.0875, -0.0255] ]
+      layers: ["robot","3d"]  # 车轮所在层
+
+- name: rear_right_wheel
+  color: [1, 1, 1, 0.75]
+  footprints:
+    - type: polygon
+      density: 1.0
+      points: 
+        [ [ 0.0875, -0.0255],
+          [ 0.0875,  0.0255],
+          [-0.0875, 0.0255],
+          [-0.0875, -0.0255] ]
+      layers: ["robot","3d"]  # 车轮所在层
+
+joints:
+- type: weld
+  name: laser_mount_weld
+  bodies: 
+    - name: laser_mount
+      anchor: [0, 0]
+    - name: base
+      anchor: [0, 0]
+
+- type: revolute
+  name: front_left_wheel_revolute
+  bodies:
+    - name: front_left_wheel
+      anchor: [0.0, 0.0]  # 车轮上的锚点必须是 (0, 0)
+    - name: base
+      anchor: [0.4, 0.2]  # 车体上的锚点位置
+
+- type: revolute
+  name: front_right_wheel_revolute
+  bodies:
+    - name: front_right_wheel
+      anchor: [0.0, 0.0]  # 车轮上的锚点必须是 (0, 0)
+    - name: base
+      anchor: [0.4, -0.2]  # 车体上的锚点位置
+
+- type: revolute
+  name: rear_left_wheel_revolute
+  bodies:
+    - name: rear_left_wheel
+      anchor: [0.0, 0.0]  # 车轮上的锚点必须是 (0, 0)
+    - name: base
+      anchor: [-0.4, 0.2]  # 车体上的锚点位置
+
+- type: revolute
+  name: rear_right_wheel_revolute
+  bodies:
+    - name: rear_right_wheel
+      anchor: [0.0, 0.0]  # 车轮上的锚点必须是 (0, 0)
+    - name: base
+      anchor: [-0.4, -0.2]  # 车体上的锚点位置
+
+plugins:
+- type: DackermannDrive
+  name: cleaner_drive
+  body: base
+  front_left_wheel_joint: front_left_wheel_revolute
+  front_right_wheel_joint: front_right_wheel_revolute
+  rear_left_wheel_joint: rear_left_wheel_revolute
+  rear_right_wheel_joint: rear_right_wheel_revolute
+  odom_frame_id: map
+  odom_pub: map  # topic odom is published on
+  pub_rate: 100
+  angular_dynamics:
+    acceleration_limit: 0.0   # max acceleration (away from 0), in rads/s/s; 0.0 means "no limit"
+    deceleration_limit: 0.0   # max deceleration (towards 0), in rads/s/s; 0.0 means "no limit"; left blank, will default to acceleration_limit value
+    velocity_limit: 0.0       # max absolute velocity in rads/s; 0.0 means "no limit"
+  linear_dynamics:
+    acceleration_limit: 0.0   # max acceleration (away from 0), in m/s/s; 0.0 means "no limit"
+    deceleration_limit: 0.0   # max deceleration (towards 0), in m/s/s; 0.0 means "no limit"; left blank, will default to acceleration_limit value
+    velocity_limit: 0.0       # max absolute velocity in m/s; 0.0 means "no limit"
+  # odom_pose_noise: [0.0005,0.0005,0.0001]
+  #odom_twist_noise: [0.001,0.001,0.001]
+  # odom_pose_covariance: [0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 
+  #                         0.06, 0.07, 0.08, 0.09, 0.10, 0.11, 
+  #                         0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 
+  #                         0.18, 0.19, 0.20, 0.21, 0.22, 0.23, 
+  #                         0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 
+  #                         0.30, 0.31, 0.32, 0.33, 0.34, 0.35]
+
+# - type: Laser
+#   name: laser_front
+#   frame: laser_mount
+#   topic: scan
+#   body: laser_mount
+#   broadcast_tf: false
+#   origin: [0, 0, 0]
+#   range: 20
+#   angle: 
+#     min: -3.141592653589793  # -π, 表示-180度
+#     max: 3.141592653589793   # π, 表示180度
+#     increment: 0.004363323129985824
+#   noise_std_dev: 0.05
+#   update_rate: 100
+#   layers: ["2d"]  # 激光所在层
+
+- type: ModelTfPublisher
+  name: tf_publisher
+  publish_tf_world: false
