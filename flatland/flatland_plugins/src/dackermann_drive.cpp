@@ -485,10 +485,10 @@ void DackermannDrive::BeforePhysicsStep(const Timekeeper& timekeeper) {
   double v_r_y = v_r_ * cos(theta_r_) * sin(theta); // 后轮y方向速度
 
   // 计算前轮的角速度
-  double w_f = v_f_ * sin(theta_f_) / wheelbase_;
+  double w_f = 2 * v_f_ * sin(theta_f_) / wheelbase_;
 
   // 计算后轮的角速度
-  double w_r = v_r_ * sin(theta_r_) / wheelbase_;
+  double w_r = 2 * v_r_ * sin(theta_r_) / wheelbase_;
 
   // 合成前后轮的线速度
   double v_x = (v_f_x + v_r_x) / 2; // 取平均值
